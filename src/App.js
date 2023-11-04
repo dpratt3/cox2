@@ -2,6 +2,7 @@ import logo from './cox2.png';
 import './App.css';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'; 
+import Slider from './components/Slider';
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -19,6 +20,7 @@ function App() {
 
   return (
     <div className="App">
+      <Slider />
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         {/* <p>
