@@ -1,8 +1,7 @@
-import logo from './logo.svg';
+import logo from './cox2.png';
 import './App.css';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios'; // You'll need to install Axios
-
+import axios from 'axios'; 
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -22,7 +21,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
+        {/* <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
         <a
@@ -32,15 +31,10 @@ function App() {
           rel="noopener noreferrer"
         >
           Learn React
-        </a>
+        </a> */}
       </header>
     </div>
   );
 }
 
 export default App;
-
-
-// cox2Class (cox2)        COX-2 Activity Data
-// cox2Descr (cox2)        COX-2 Activity Data
-// cox2IC50 (cox2)         COX-2 Activity Data
