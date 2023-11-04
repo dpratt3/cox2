@@ -7,7 +7,7 @@ library(RSQLite)
 set.seed(123)
 
 # Threshold will be user specified
-threshold = commandArgs(trailing = TRUE)
+threshold = as.numeric(commandArgs(trailing = TRUE))
 
 # Replace 'your_database.db' with the path to your SQLite database file
 con <- dbConnect(SQLite(), dbname = "../cox2.db")
@@ -22,7 +22,7 @@ print(result)
 # incorporate threshold
 result$cox2Class = ifelse(result$cox2IC50 < threshold, 0, 1)
 
-split <- createDataPartition(result$cox2Class, p = 0.7, list=FALSE)
+split <- createDataPartition(result$cox2Class, p = 0.8, list=FALSE)
 training <- result[split,]
 testing <- result[-split,]
 
@@ -64,10 +64,21 @@ print(dim(testing))
 
 # Use Naive Bayes. It is robust to minor variances in feature dimensions.
 training_pca$cox2Class = as.factor(training$cox2Class)
-model <- train(cox2Class ~ ., data = training_pca[, c(1:30, dim(training_pca)[[2]])], method = "nb")
+
+ctrl <- trainControl(
+  method = "cv",          
+  number = 10,           
+  classProbs = FALSE,      
+  summaryFunction = twoClassSummary 
+)
+
+model <- train(cox2Class ~ ., data = training_pca[, c(1:30, dim(training_pca)[[2]])], method = "rf", TrControl = ctrl)
 
 predictions = predict(model, testing_pca[ ,1:30] )
 actual = testing$cox2Class
+
+print(actual)
+print(testing)
 confusion_matrix = table(actual, predictions)
 
 # Calculate metrics
