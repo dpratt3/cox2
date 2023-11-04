@@ -2,7 +2,8 @@ import logo from './cox2.png';
 import './App.css';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'; 
-import Slider from './components/Slider';
+import Slider from './components/Slider/Slider';
+import StylizedHistogram from './components/Histogram/StylizedHistogram';
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -19,22 +20,13 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <Slider />
-      <header className="App-header">
+      <div className="App">
+        <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        {/* <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a> */}
       </header>
+      <StylizedHistogram />
+      <Slider />
+
     </div>
   );
 }
