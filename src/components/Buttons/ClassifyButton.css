@@ -1,0 +1,14 @@
+.classify-button {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 10px 40px; /* Adjust the padding to make the button wider */
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .classify-button:hover {
+    background-color: purple;
+  }
+  

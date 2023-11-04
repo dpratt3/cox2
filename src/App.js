@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios'; 
 import Slider from './components/Slider/Slider';
 import StylizedHistogram from './components/Histogram/StylizedHistogram';
+import ClassifyButton from './components/Buttons/ClassifyButton'; // Import the ClassifyButton component
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -26,7 +27,7 @@ function App() {
       </header>
       <StylizedHistogram />
       <Slider />
-
+      <ClassifyButton /> 
     </div>
   );
 }
