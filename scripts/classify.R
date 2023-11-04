@@ -4,6 +4,8 @@ library(ROSE)
 library(PreProcess)
 library(RSQLite)
 
+set.seed(123)
+
 # Threshold will be user specified
 threshold = commandArgs(trailing = TRUE)
 
@@ -51,8 +53,8 @@ preProcTraining <- preProcess(selected_training_columns, method = "pca", zv = TR
 preProcTesting <- preProcess(selected_testing_columns, method = "pca", zv = TRUE)
 
 # Apply the PCA transformation to your data
-training <- predict(preProcTraining, selected_training_columns)
-testing <- predict(preProcTesting, selected_testing_columns)
+training_pca <- predict(preProcTraining, selected_training_columns)
+testing_pca <- predict(preProcTesting, selected_testing_columns)
 
 print(preProcTraining)
 print(preProcTesting)
@@ -61,3 +63,39 @@ print(dim(training))
 print(dim(testing))
 
 # Use Naive Bayes. It is robust to minor variances in feature dimensions.
+training_pca$cox2Class = as.factor(training$cox2Class)
+model <- train(cox2Class ~ ., data = training_pca[, c(1:30, dim(training_pca)[[2]])], method = "nb")
+
+predictions = predict(model, testing_pca[ ,1:30] )
+actual = testing$cox2Class
+confusion_matrix = table(actual, predictions)
+
+# Calculate metrics
+TP <- confusion_matrix[2, 2]  # True Positives
+TN <- confusion_matrix[1, 1]  # True Negatives
+FP <- confusion_matrix[1, 2]  # False Positives
+FN <- confusion_matrix[2, 1]  # False Negatives
+
+# Accuracy
+accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+
+# Precision (Positive Predictive Value)
+precision <- TP / (TP + FP)
+
+# Recall (Sensitivity)
+recall <- TP / (TP + FN)
+
+# Specificity
+specificity <- TN / (TN + FP)
+
+# F1-Score
+f1_score <- 2 * (precision * recall) / (precision + recall)
+
+# Print metrics
+cat("Accuracy:", accuracy, "\n")
+cat("Precision:", precision, "\n")
+cat("Recall:", recall, "\n")
+cat("Specificity:", specificity, "\n")
+cat("F1-Score:", f1_score, "\n")
+
+print(confusion_matrix)
