@@ -27,16 +27,11 @@ training <- result[split, !names(result) %in% "cox2Class"]
 class_actual <- result[-split, names(result) %in% "cox2Class"]
 testing <- result[-split, !names(result) %in% "cox2Class"]
 
-ctrl <- trainControl(method = "boot", number = 100)
-preprocess <- c("ADASYN")
-
 model <- randomForest(cox2IC50 ~ ., 
                       data = training, 
                       ntree = 1500, 
                       mtry = 30, 
-                      nodesize = 0.25,
-                      trControl = ctrl,
-                      preProcess = preprocess)
+                      nodesize = 0.25)
 
 predictions <- predict(model, testing)
 
