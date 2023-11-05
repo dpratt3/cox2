@@ -3,6 +3,7 @@ library(caret)
 library(ROSE)
 library(PreProcess)
 library(RSQLite)
+library(randomForest)
 
 set.seed(123)
 
@@ -21,6 +22,7 @@ print(result)
 
 # incorporate threshold
 result$cox2Class = ifelse(result$cox2IC50 < threshold, 0, 1)
+result <- result[, -which(names(result) == "cox2IC50")]
 
 split <- createDataPartition(result$cox2Class, p = 0.8, list=FALSE)
 training <- result[split,]
@@ -65,14 +67,19 @@ print(dim(testing))
 # Use Naive Bayes. It is robust to minor variances in feature dimensions.
 training_pca$cox2Class = as.factor(training$cox2Class)
 
-ctrl <- trainControl(
-  method = "cv",          
-  number = 10,           
-  classProbs = FALSE,      
-  summaryFunction = twoClassSummary 
-)
+# ctrl <- trainControl(
+#   method = "cv",          
+#   number = 10,           
+#   classProbs = FALSE,      
+#   summaryFunction = twoClassSummary 
+# )
 
-model <- train(cox2Class ~ ., data = training_pca[, c(1:30, dim(training_pca)[[2]])], method = "rf", TrControl = ctrl)
+model <- randomForest(cox2Class ~ ., 
+                      data = training_pca[, c(1:30, dim(training_pca)[[2]])], 
+                      ntree = 500, 
+                      mtry = 4, 
+                      nodesize = 1)
+
 
 predictions = predict(model, testing_pca[ ,1:30] )
 actual = testing$cox2Class
