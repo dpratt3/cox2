@@ -27,11 +27,19 @@ training <- result[split, !names(result) %in% "cox2Class"]
 class_actual <- result[-split, names(result) %in% "cox2Class"]
 testing <- result[-split, !names(result) %in% "cox2Class"]
 
+# Find the optimal level for mtry
+# x <- training[, -ncol(training)]  
+# y <- training[, ncol(training)]  
+
+# # Now you can use tuneRF
+# tuneRF(x, y, stepFactor = 1.5)
+
 model <- randomForest(cox2IC50 ~ ., 
                       data = training, 
                       ntree = 1500, 
                       mtry = 30, 
-                      nodesize = 0.25)
+                      nodesize = 0.25,
+                      rsq = TRUE)
 
 predictions <- predict(model, testing)
 
