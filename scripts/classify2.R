@@ -22,17 +22,18 @@ dbDisconnect(con)
 
 print(result)
 
-split <- createDataPartition(result$cox2Class, p = 0.8, list=FALSE)
-training <- result[split,]
-testing <- result[-split,]
+split <- createDataPartition(result$cox2IC50, p = 0.8, list=FALSE)
+training <- result[split, !names(result) %in% "cox2Class"]
+class_actual <- result[-split, names(result) %in% "cox2Class"]
+testing <- result[-split, !names(result) %in% "cox2Class"]
 
-ctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+ctrl <- trainControl(method = "boot", number = 100)
 preprocess <- c("ADASYN")
 
 model <- randomForest(cox2IC50 ~ ., 
                       data = training, 
-                      ntree = 500, 
-                      mtry = 200, 
+                      ntree = 1500, 
+                      mtry = 30, 
                       nodesize = 0.25,
                       trControl = ctrl,
                       preProcess = preprocess)
