@@ -1,5 +1,4 @@
 setwd("~/git/cox/scripts")
-cat("Current working directory:", getwd(), "\n")
 library(RSQLite)
 library(caret)
 library(RSQLite)
@@ -13,14 +12,13 @@ threshold = as.numeric(commandArgs(trailing = TRUE))
 
 # # Replace 'your_database.db' with the path to your SQLite database file
 con <- dbConnect(SQLite(), dbname = "../cox2.db")
-print(con)
+# print(con)
 
 query <- "SELECT * FROM cox2Data"
 result <- dbGetQuery(con, query)
-print(result)
 dbDisconnect(con)
 
-print(result)
+# print(result)
 
 split <- createDataPartition(result$cox2IC50, p = 0.8, list=FALSE)
 training <- result[split, !names(result) %in% "cox2Class"]
@@ -48,8 +46,8 @@ residuals = testing$cox2IC50 - predictions
 class_predictions = ifelse(predictions > threshold, 1, 0)
 class_actual = ifelse(testing$cox2IC50 > threshold, 1, 0)
 
-print(class_predictions)
-print(class_actual)
+# print(class_predictions)
+# print(class_actual)
 
 confusion_matrix <- table(class_actual, class_predictions)
 print(confusion_matrix)

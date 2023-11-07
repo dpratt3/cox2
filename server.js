@@ -8,12 +8,15 @@ app.use(express.json());
 
 app.post('/run-r-script', (req, res) => {
   const inputValue = req.body.inputValue;
-  
+  let scriptOutput = '';
+
   // Execute the R script with the given input value
   const classifyProcess = spawn('Rscript', ['./scripts/classify.R', inputValue]);
 
   classifyProcess.stdout.on('data', (data) => {
-    console.log(`R Script Output: ${data}`);
+    // console.log(`R Script Output: ${data}`);
+    const outputData = data.toString();
+    scriptOutput += outputData;
   });
 
   classifyProcess.stderr.on('data', (data) => {
@@ -22,7 +25,8 @@ app.post('/run-r-script', (req, res) => {
 
   classifyProcess.on('close', (code) => {
     console.log(`R Script Exited with Code: ${code}`);
-    res.send('Script executed successfully');
+    // res.send('Script executed successfully');
+    res.send(scriptOutput.split('\n'));
   });
 });
 
