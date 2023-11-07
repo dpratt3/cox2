@@ -10,8 +10,8 @@
   /* width: 100px;
   height: 100px; */
   position: absolute;
-  top: 5%; /* Center vertically within the parent container */
-  left: 10%; /* Center horizontally within the parent container */
+  top: 0%; /* Center vertically within the parent container */
+  left: 5%; /* Center horizontally within the parent container */
   transform: translate(-50%, -50%); /* Center the logo within itself */
   z-index: -1;
 }
