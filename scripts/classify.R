@@ -4,10 +4,12 @@ library(ROSE)
 library(PreProcess)
 library(RSQLite)
 library(randomForest)
+library(pROC)
+library(DMwR2)
 
 set.seed(123)
 
-# Threshold will be user specified
+# # Threshold will be user specified
 threshold = as.numeric(commandArgs(trailing = TRUE))
 
 # Replace 'your_database.db' with the path to your SQLite database file
@@ -20,100 +22,59 @@ dbDisconnect(con)
 
 print(result)
 
-# incorporate threshold
-result$cox2Class = ifelse(result$cox2IC50 < threshold, 0, 1)
-result <- result[, -which(names(result) == "cox2IC50")]
+split <- createDataPartition(result$cox2IC50, p = 0.8, list=FALSE)
+training <- result[split, !names(result) %in% "cox2Class"]
+class_actual <- result[-split, names(result) %in% "cox2Class"]
+testing <- result[-split, !names(result) %in% "cox2Class"]
 
-split <- createDataPartition(result$cox2Class, p = 0.8, list=FALSE)
-training <- result[split,]
-testing <- result[-split,]
+# Find the optimal level for mtry
+# x <- training[, -ncol(training)]  
+# y <- training[, ncol(training)]  
 
-# Check class balance before SMOTE
-cat("Class balance before SMOTE")
- table(training$cox2Class) # should be roughly equal
+# # Now you can use tuneRF
+# tuneRF(x, y, stepFactor = 1.5)
 
-# SMOTE the training data to balance classes
-class_label <- "cox2Class"
-formula <- as.formula(paste(class_label, "~ ."))
+model <- randomForest(cox2IC50 ~ ., 
+                      data = training, 
+                      ntree = 1499, 
+                      mtry = 30, 
+                      nodesize = 0.25,
+                      rsq = TRUE)
 
-# Apply SMOTE using the ROSE function with the formula
-# smote_data <- ROSE(formula, data = training, N = nrow(training) * 2, seed = 123)
-# training = smote_data$data
+predictions <- predict(model, testing)
 
-# Make sure dataset is balanced
-cat("Class balance after SMOTE")
-table(training$cox2Class) # should be roughly equal
+residuals = testing$cox2IC50 - predictions
 
-# PCA both training and testing dat. Variance threshold insures congruency.
-selected_training_columns <- training[, !names(training) %in% class_label]
-selected_training_columns <- selected_training_columns[, apply(selected_training_columns, 2, var) > 0.5]
-selected_testing_columns <- testing[, !names(testing) %in% class_label]
-selected_testing_columns <- selected_testing_columns[, apply(selected_testing_columns, 2, var) > 0]
+class_predictions = ifelse(predictions > threshold, 1, 0)
+class_actual = ifelse(testing$cox2IC50 > threshold, 1, 0)
 
-# Perform PCA
-preProcTraining <- preProcess(selected_training_columns, method = "pca", zv = TRUE)
-preProcTesting <- preProcess(selected_testing_columns, method = "pca", zv = TRUE)
+print(class_predictions)
+print(class_actual)
 
-# Apply the PCA transformation to your data
-training_pca <- predict(preProcTraining, selected_training_columns)
-testing_pca <- predict(preProcTesting, selected_testing_columns)
-
-print(preProcTraining)
-print(preProcTesting)
-
-print(dim(training))
-print(dim(testing))
-
-# Use Naive Bayes. It is robust to minor variances in feature dimensions.
-training_pca$cox2Class = as.factor(training$cox2Class)
-
-# ctrl <- trainControl(
-#   method = "cv",          
-#   number = 10,           
-#   classProbs = FALSE,      
-#   summaryFunction = twoClassSummary 
-# )
-
-model <- randomForest(cox2Class ~ ., 
-                      data = training_pca[, c(1:30, dim(training_pca)[[2]])], 
-                      ntree = 500, 
-                      mtry = 4, 
-                      nodesize = 1)
-
-
-predictions = predict(model, testing_pca[ ,1:30] )
-actual = testing$cox2Class
-
-print(actual)
-print(testing)
-confusion_matrix = table(actual, predictions)
-
-# Calculate metrics
-TP <- confusion_matrix[2, 2]  # True Positives
-TN <- confusion_matrix[1, 1]  # True Negatives
-FP <- confusion_matrix[1, 2]  # False Positives
-FN <- confusion_matrix[2, 1]  # False Negatives
+confusion_matrix <- table(class_actual, class_predictions)
+print(confusion_matrix)
 
 # Accuracy
-accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+accuracy <- (confusion_matrix[1, 1] + confusion_matrix[2, 2]) / sum(confusion_matrix)
+cat("Accuracy:", accuracy, "\n")
 
-# Precision (Positive Predictive Value)
-precision <- TP / (TP + FP)
+# Precision
+precision <- confusion_matrix[2, 2] / sum(confusion_matrix[, 2])
+cat("Precision:", precision, "\n")
 
 # Recall (Sensitivity)
-recall <- TP / (TP + FN)
+recall <- confusion_matrix[2, 2] / sum(confusion_matrix[2, ])
+cat("Recall:", recall, "\n")
 
 # Specificity
-specificity <- TN / (TN + FP)
+specificity <- confusion_matrix[1, 1] / sum(confusion_matrix[1, ])
+cat("Specificity:", specificity, "\n")
 
 # F1-Score
 f1_score <- 2 * (precision * recall) / (precision + recall)
-
-# Print metrics
-cat("Accuracy:", accuracy, "\n")
-cat("Precision:", precision, "\n")
-cat("Recall:", recall, "\n")
-cat("Specificity:", specificity, "\n")
 cat("F1-Score:", f1_score, "\n")
 
-print(confusion_matrix)
+# ROC-AUC
+roc_auc <- auc(roc(class_actual, class_predictions))
+cat("ROC-AUC:", roc_auc, "\n")
+
