@@ -11,6 +11,7 @@ function App() {
 
   return (
       <div className="App">
+        <h1 style={{ color: 'white', fontSize: '36px'}}>Cox-2 Classifier</h1>
         <div className="translucent">
           <StylizedHistogram />
           <Slider />
