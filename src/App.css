@@ -2,9 +2,18 @@
   text-align: center;
 }
 
+.translucent {
+  opacity: 0.8;
+}
+
 .App-logo {
-  height: 40vmin;
-  pointer-events: none;
+  /* width: 100px;
+  height: 100px; */
+  position: absolute;
+  top: 5%; /* Center vertically within the parent container */
+  left: 10%; /* Center horizontally within the parent container */
+  transform: translate(-50%, -50%); /* Center the logo within itself */
+  z-index: -1;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -16,7 +25,6 @@
 body {
   background-color: black !important;
 }
-
 
 .App-header {
   margin: 0;

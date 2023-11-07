@@ -23,12 +23,12 @@ function App() {
 
   return (
       <div className="App">
-        <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-      </header>
-      <StylizedHistogram />
-      <Slider />
+        <div className="translucent">
+          <StylizedHistogram />
+          <Slider />
+        </div>
       <ClassifyButton /> 
+      <img src={logo} className="App-logo" alt="logo" />
     </div>
   );
 }
