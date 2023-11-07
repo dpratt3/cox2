@@ -1,9 +1,28 @@
 import React from 'react';
-import './ClassifyButton.css'; // Import your CSS file
+import './ClassifyButton.css'; 
+import axios from 'axios';
+import { useState } from 'react';
 
 const ClassifyButton = () => {
-  return (
-    <button className="classify-button">Classify</button>
+  const [output, setOutput] = useState('');
+  
+  const handleClassifyClick = () => {
+    const inputValue = 25; // Hard code for now
+    
+    axios.post('/run-r-script', { inputValue })
+      .then(response => {
+        const scriptOutput = response.data;
+        setOutput(scriptOutput) 
+      })
+      .catch(error => {
+        console.error(error); 
+      });
+  };
+    return (
+      <div>
+        <button className="classify-button" onClick={handleClassifyClick}>Classify</button>
+        <div style={{ color: 'white' }} id="output" className="output">{output}</div>
+      </div>
   );
 };
 

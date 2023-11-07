@@ -1,3 +1,5 @@
+setwd("~/git/cox/scripts")
+cat("Current working directory:", getwd(), "\n")
 library(RSQLite)
 library(caret)
 library(RSQLite)
@@ -6,15 +8,16 @@ library(pROC)
 
 set.seed(123)
 
-# # Threshold will be user specified
+# # # Threshold will be user specified
 threshold = as.numeric(commandArgs(trailing = TRUE))
 
-# Replace 'your_database.db' with the path to your SQLite database file
+# # Replace 'your_database.db' with the path to your SQLite database file
 con <- dbConnect(SQLite(), dbname = "../cox2.db")
 print(con)
 
 query <- "SELECT * FROM cox2Data"
 result <- dbGetQuery(con, query)
+print(result)
 dbDisconnect(con)
 
 print(result)
