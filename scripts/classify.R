@@ -1,11 +1,8 @@
 library(RSQLite)
 library(caret)
-library(ROSE)
-library(PreProcess)
 library(RSQLite)
 library(randomForest)
 library(pROC)
-library(DMwR2)
 
 set.seed(123)
 
