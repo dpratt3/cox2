@@ -8,18 +8,6 @@ import ClassifyButton from './components/Buttons/ClassifyButton'; // Import the 
 
 
 function App() {
-  // const [users, setUsers] = useState([]);
-
-  // useEffect(() => {
-  //   // Make a GET request to the server to fetch user data
-  //   axios.get('/getUsers')
-  //     .then(response => {
-  //       setUsers(response.data);
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //     });
-  // }, []);
 
   return (
       <div className="App">
