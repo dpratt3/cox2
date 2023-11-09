@@ -1,7 +1,6 @@
 setwd("~/git/cox/scripts")
-library(RSQLite)
+# library(RSQLite)
 library(caret)
-library(RSQLite)
 library(randomForest)
 library(pROC)
 

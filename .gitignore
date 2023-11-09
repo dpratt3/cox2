@@ -38,3 +38,6 @@ yarn.lock
 *.db
 *.sql
 
+# Ignore keys
+keys
+*.pem
