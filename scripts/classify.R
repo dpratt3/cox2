@@ -1,5 +1,5 @@
-setwd("~/git/cox/scripts")
-# library(RSQLite)
+setwd("~/git/cox2classifier/scripts")
+library(RSQLite)
 library(caret)
 library(randomForest)
 library(pROC)
@@ -10,18 +10,18 @@ set.seed(123)
 threshold = as.numeric(commandArgs(trailing = TRUE))
 
 # # # Replace 'your_database.db' with the path to your SQLite database file
-# con <- dbConnect(SQLite(), dbname = "../cox2.db")
+con <- dbConnect(SQLite(), dbname = "../cox2.db")
 # # print(con)
 
-# query <- "SELECT * FROM cox2Data"
-# result <- dbGetQuery(con, query)
-# dbDisconnect(con)
+query <- "SELECT * FROM cox2Data"
+result <- dbGetQuery(con, query)
+dbDisconnect(con)
 
 # Attach dataset from caret package
-data(cox2)
-data = cbind.data.frame(cox2Descr, cox2IC50, cox2Class)
-result = data
-data$cox2Class = ifelse(data$cox2Class == "Inactive", 0, 1)
+# data(cox2)
+# data = cbind.data.frame(cox2Descr, cox2IC50, cox2Class)
+# result = data
+# data$cox2Class = ifelse(data$cox2Class == "Inactive", 0, 1)
 
 # print(result)
 
