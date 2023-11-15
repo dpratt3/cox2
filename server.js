@@ -6,12 +6,12 @@ const { spawn } = require('child_process');
 
 app.use(express.json());
 
-app.post('/run-r-script', (req, res) => {
+app.post('/api/run-r-script', (req, res) => {
   const inputValue = req.body.inputValue;
   let scriptOutput = '';
 
   // Execute the R script with the given input value
-  const classifyProcess = spawn('Rscript', ['./scripts/classify.R', inputValue]);
+  const classifyProcess = spawn('Rscript', ['/home/david/git/cox2classifier/scripts/classify.R', inputValue]);
 
   classifyProcess.stdout.on('data', (data) => {
     // console.log(`R Script Output: ${data}`);

@@ -9,7 +9,7 @@ const ClassifyButton = () => {
   const handleClassifyClick = () => {
     const inputValue = 25; // Hard code for now
     
-    axios.post('/run-r-script', { inputValue })
+    axios.post('/api/run-r-script', { inputValue })
       .then(response => {
         const scriptOutput = response.data;
         setOutput(scriptOutput) 
